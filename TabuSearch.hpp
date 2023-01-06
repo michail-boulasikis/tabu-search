@@ -288,11 +288,11 @@ namespace tabu {
          * @return The best point found.
          */
         point_type run(point_type initial_condition, uint32_t max_iterations) {
-            _on_start(_data);
             _flush_tabu();
             auto randomize_iteration_threshold = static_cast<uint32_t>(_options.randomize_threshold * max_iterations);
             _data.iteration_base_point = initial_condition;
             _data.iteration_cost = _space.eval(_data.iteration_base_point);
+            _on_start(_data);
             while (_data.iteration_count != max_iterations && !_early_stop_condition(_data)) {
                 _on_new_iteration(_data);
                 // Compile time evaluation - if the space can provide hints, this
@@ -320,13 +320,13 @@ namespace tabu {
                         }
                     }
                 }
+                // We first set the iteration cost to max, so that any move will be an improvement.
+                _data.iteration_cost = std::numeric_limits<double>::infinity();
                 // If the space does not provide hints (or if the hint was rejected),
                 // just use the moves as normal
                 if constexpr (ExplorableSpaceLazy<Space>) {
                     // In case the space is lazy, we sample the neighborhood by using the generator function.
                     // This code does not use the neighborhood coverage value, since the space is lazy, and we cannot know the size of the neighborhood.
-                    // We first set the iteration cost to max, so that any move will be an improvement.
-                    _data.iteration_cost = std::numeric_limits<double>::infinity();
                     // Set the current point as the root point for the neighborhood generator.
                     _space.set_current_point(_data.iteration_base_point);
                     for (point_type move; move != nullptr; move = _space.get_move()) {
