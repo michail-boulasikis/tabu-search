@@ -7,27 +7,42 @@ int main() {
     // Initialize the problem
     tabu_examples::EightQueens problem{};
 
+    // Create the options for the tabu search
+    tabu::TabuSearch<tabu_examples::EightQueens>::SearchOptions options{};
+    // The size of the tabu list, i.e. the number of moves that are not allowed
+    options.tabu_list_size = 2000;
+    // The percentage of steps that need to run without an improvement before the search is randomly restarted.
+    options.randomize_threshold = 0.1;
+    // The percentage of the neighborhood that is explored in each step.
+    options.neighborhood_coverage = 0.15;
+    // The seed of the random number generator.
+    options.seed = tabu::TEST_SEED;
+
     // Create the tabu algorithm configuration, with the problem, the tabu list
     // size, and the neighborhood exploration percentage.
-    tabu::TabuSearch<tabu_examples::EightQueens> tabu_search{problem, 2000, 0.15};
-    // Seed the random number generator with a constant value for reproducibility.
-    tabu_search.seed(tabu::TEST_SEED);
+    tabu::TabuSearch<tabu_examples::EightQueens> tabu_search{problem, options};
     // When the algorithm starts, run this callback to get the performance of
     // our starting point.
     tabu_search.set_callback_on_start(
-            []() { std::cout << "Starting search with initial solution performance 28." << std::endl; });
+            [](auto x) { std::cout << "Starting search with initial solution performance 28." << std::endl; });
     // When we find a new best solution, run this callback to get the
     // performance of the new best solution.
-    tabu_search.set_callback_on_new_best([]() { std::cout << "New best solution found." << std::endl; });
-    // Set the randomization threshold to 10% of the iteration count, so that the algorithm has a chance to reset if it
-    // gets stuck on a local minimum.
-    tabu_search.set_randomize_threshold(0.1);
+    tabu_search.set_callback_on_new_best(
+            [](const auto &x) { std::cout << "New best solution found with cost = " << x.lowest_cost << std::endl; });
     // Called when the algorithm randomizes the current search point.
-    tabu_search.set_callback_on_randomize([]() { std::cout << "Randomizing search point." << std::endl; });
+    tabu_search.set_callback_on_randomize([](const auto &x) { std::cout << "Randomizing search point." << std::endl; });
+    // Set an early stopping callback which stops the search when the cost becomes 0 (i.e. we found a solution)
+    tabu_search.set_callback_early_stopping([](const auto &x) {
+        if (x.lowest_cost == 0.0) {
+            std::cout << "Solution found early! Stopping." << std::endl;
+            return true;
+        }
+        return false;
+    });
     // Run the tabu search algorithm for 100 iterations. Use an all queens on the first row initial condition.
     auto solution = tabu_search.run({1, 2, 3, 4, 5, 6, 7, 8}, 400);
     // Print the solution.
-    std::cout << "Approximate (or exact) Solution: " << std::endl;
+    std::cout << "Solution: " << std::endl;
     tabu_examples::print(solution);
 
     return 0;
