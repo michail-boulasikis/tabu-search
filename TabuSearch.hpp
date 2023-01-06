@@ -291,7 +291,7 @@ namespace tabu {
             _flush_tabu();
             auto randomize_iteration_threshold = static_cast<uint32_t>(_options.randomize_threshold * max_iterations);
             _data.iteration_base_point = initial_condition;
-            _data.iteration_cost = _space.eval(_data.iteration_base_point);
+            _data.lowest_cost = _space.eval(_data.iteration_base_point);
             _on_start(_data);
             while (_data.iteration_count != max_iterations && !_early_stop_condition(_data)) {
                 _on_new_iteration(_data);

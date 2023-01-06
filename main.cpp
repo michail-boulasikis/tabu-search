@@ -23,10 +23,13 @@ int main() {
     tabu::TabuSearch<tabu_examples::EightQueens> tabu_search{problem, options};
     // When the algorithm starts, run this callback.
     tabu_search.set_callback_on_start(
-            [](const auto &x) { std::cout << "Starting search." << std::endl; });
+            [](const auto &x) { std::cout << "Starting search with cost = " << x.lowest_cost << std::endl; });
     // When we find a new best solution, run this callback to get the performance of the new best solution.
     tabu_search.set_callback_on_new_best(
-            [](const auto &x) { std::cout << "New best solution found with cost = " << x.lowest_cost << std::endl; });
+            [](const auto &x) {
+                std::cout << "New best solution found with cost = " << x.lowest_cost << " on iteration "
+                          << x.iteration_count << std::endl;
+            });
     // Called when the algorithm randomizes the current search point, so that we know it happened.
     tabu_search.set_callback_on_randomize([](const auto &x) { std::cout << "Randomizing search point." << std::endl; });
     // Set an early stopping callback which stops the search when the cost becomes 0 (i.e. we found a solution)
