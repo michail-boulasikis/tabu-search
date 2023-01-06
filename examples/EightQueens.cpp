@@ -4,17 +4,7 @@
 
 #include "EightQueens.hpp"
 
-#include <iostream>
-
 namespace tabu_examples {
-
-EightQueens::EightQueens(const EightQueens::point_type &queens) : _queens(queens) {}
-
-const EightQueens::point_type &EightQueens::queens() const { return _queens; }
-
-int EightQueens::operator[](int i) const { return _queens[i]; }
-
-int &EightQueens::operator[](int i) { return _queens[i]; }
 
 double EightQueens::eval(const EightQueens::point_type &queens)
 {
@@ -32,7 +22,6 @@ double EightQueens::eval(const EightQueens::point_type &queens)
 }
 std::vector<EightQueens::point_type> EightQueens::get_moves(const EightQueens::point_type &queens)
 {
-    _queens = queens;
     std::vector<EightQueens::point_type> moves;
     // First, create an array with all the free squares on the board.
     std::array<bool, 64> free_squares{};

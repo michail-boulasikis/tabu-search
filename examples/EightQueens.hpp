@@ -6,8 +6,8 @@
 #define TABU_SEARCH_EIGHTQUEENS_HPP
 
 #include <array>
-#include <functional>
 #include <vector>
+#include <iostream>
 
 namespace tabu_examples {
 
@@ -18,26 +18,9 @@ public:
     // chess board.
     using point_type = std::array<int, 8>;
 
-private:
-    // Used as storage for the current point.
-    point_type _queens;
-
-public:
-    // Just a regular constructor.
-    explicit EightQueens(const point_type& queens);
-
-    // Returns the configuration of the queens. For debugging or access purposes.
-    [[nodiscard]] const point_type& queens() const;
-
-    // Overloading the [] operator for easy access to the queens, as well as
-    // ability to set their squares.
-    int operator[](int i) const;
-
-    int& operator[](int i);
-
     // Function required by the tabu search algorithm. It returns the set of
     // possible moves from the supplied point.
-    [[nodiscard]] std::vector<point_type> get_moves(const point_type& queens);
+    [[nodiscard]] static std::vector<point_type> get_moves(const point_type& queens);
 
     // Returns the number of queens that are attacking each other, used as the
     // cost function of the tabu search algorithm.
