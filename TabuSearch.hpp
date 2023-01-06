@@ -40,7 +40,7 @@ template <typename T>
 concept ExplorableSpaceLazy = requires(T space) {
     {
         space.set_current_point(typename T::point_type {})
-    }   -> std::same_as<void>;
+    } -> std::same_as<void>;
     {
         space.get_move()
     } -> std::same_as<typename T::point_type>;
@@ -72,7 +72,7 @@ concept ExplorableSpaceBasic = requires(T space) {
  * quantifies how "good" the current point is.
  */
 template <typename T>
-concept ExplorableSpace = ExplorableSpaceLazy<T> || ExplorableSpaceBasic<T>;
+concept ExplorableSpace = SpacePoint<typename T::point_type> && (ExplorableSpaceLazy<T> || ExplorableSpaceBasic<T>);
 
 /**
  * A hint providing space is an explorable space which can provide a hint as
@@ -99,12 +99,12 @@ concept RandomizableSpace = ExplorableSpace<T> && requires(T space) {
 // clang-format on
 
 // The default size for the tabu list if none is given in the constructor
-constexpr unsigned int DEFAULT_TABU_LIST_SIZE = 10;
+constexpr uint32_t DEFAULT_TABU_LIST_SIZE = 10;
 // Default neighborhood coverage if none is given in the constructor
 constexpr double DEFAULT_NEIGHBORHOOD_COVERAGE = 0.5;
 // Test seed for the random number generator, to be used for testing the
 // algorithm
-constexpr unsigned int TEST_SEED = 12345;
+constexpr uint32_t TEST_SEED = 12345;
 // Probability to use a supplied hint if one is given
 constexpr double HINT_PROBABILITY = 0.5;
 // Default percentage of steps that have to pass without improvement before the search randomizes the point, if possible.
@@ -130,8 +130,8 @@ private:
         double tested { std::numeric_limits<double>::infinity() };
         point_type best_point;
         point_type iteration_point;
-        unsigned int iteration_count { 0 };
-        unsigned int iterations_without_improvement { 0 };
+        uint32_t iteration_count { 0 };
+        uint32_t iterations_without_improvement { 0 };
     };
 
     // We use a pointer to the space so that we can have lambdas in the space
@@ -155,7 +155,7 @@ private:
 
     // Settings for the algorithm.
     // The size of the tabu list.
-    size_t _tabu_list_size;
+    size_t _tabu_list_size{};
     // How much of the neighborhood to explore, a number which is assumed to be
     // in (0,1].
     double _neighborhood_coverage { DEFAULT_NEIGHBORHOOD_COVERAGE };
@@ -312,7 +312,7 @@ public:
     /** Constructor for the Tabu Search algorithm.
      * @param space The explorable space to search.
      */
-    TabuSearch(Space& space)
+    explicit TabuSearch(Space& space)
         : TabuSearch(space, DEFAULT_TABU_LIST_SIZE, DEFAULT_NEIGHBORHOOD_COVERAGE)
     {
     }
@@ -320,7 +320,7 @@ public:
     /** Seed the random engine with a given value.
      * @param seed The seed to use.
      */
-    inline void seed(unsigned int seed) { _random_engine.seed(seed); }
+    inline void seed(uint32_t seed) { _random_engine.seed(seed); }
 
     /** Checks whether a space point is tabu or not.
      * @param point The point to check.
