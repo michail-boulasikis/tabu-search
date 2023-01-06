@@ -18,7 +18,7 @@ The `TabuSearch` class can then be constructed by supplying your space as a temp
 The options are:
 * `tabu_list_size`, the size of the tabu list.
 * `neighborhood_coverage`, a number between 0 and 1 which determines the percentage of the neighborhood that will be explored. The higher the number, the more moves will be explored, but the more time it will take.
-* `randomize_threshold`, the fraction of steps that the algorithm will wait before it restarts the search from a random point. This is useful to avoid getting stuck in local minima.
+* `randomize_threshold`, the fraction of steps that the algorithm will wait before it restarts the search from a random point, provided the space supports this. This is useful to avoid getting stuck in local minima.
 * `seed`, the seed of the random number generator. If you don't provide this, the random number generator will be seeded with a random device.
 
 If your space has a `get_hint(point_type)` function that returns a hint move, the algorithm will use it to get a hint for every step of the search. There is a fixed probability that the hint will be rejected, but if it's accepted (and the landing point is not in the tabu list), the search will continue from there. This can be used to speed up the search, but it is not required. The hint does not need to always improve the solution, but it should be a good move in most cases.
