@@ -31,7 +31,9 @@ int main() {
                           << x.iteration_count << std::endl;
             });
     // Called when the algorithm randomizes the current search point, so that we know it happened.
-    tabu_search.set_callback_on_randomize([](const auto &x) { std::cout << "Randomizing search point." << std::endl; });
+    tabu_search.set_callback_on_randomize([](const auto &x) {
+        std::cout << "Randomizing search point on iteration " << x.iteration_count << std::endl;
+    });
     // Set an early stopping callback which stops the search when the cost becomes 0 (i.e. we found a solution)
     tabu_search.set_callback_early_stopping([](const auto &x) {
         if (x.lowest_cost == 0.0) {
